@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8081";
+import { kirimRequest, ambilPesanError } from "./http";
 
 export type Peminjaman = {
   id: number;
@@ -23,7 +24,7 @@ export type PeminjamanInput = {
 export async function tambahPeminjaman(
   data: PeminjamanInput,
 ): Promise<Peminjaman> {
-  const response = await fetch(`${BASE_URL}/peminjaman`, {
+  const response = await kirimRequest(`${BASE_URL}/peminjaman`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,8 +33,8 @@ export async function tambahPeminjaman(
   });
 
   if (!response.ok) {
-    const hasil: { error?: string } = await response.json();
-    throw new Error(hasil.error || "Gagal membuat peminjaman.");
+    // const hasil: { error?: string } = await response.json();
+    throw new Error(await ambilPesanError(response));
   }
 
   return response.json() as Promise<Peminjaman>;
@@ -63,22 +64,21 @@ export async function getPeminjaman(
     ? `${BASE_URL}/peminjaman?${query}`
     : `${BASE_URL}/peminjaman`;
 
-  const response = await fetch(url);
+  const response = await kirimRequest(url);
 
   if (!response.ok) {
-    const hasil: { error?: string } = await response.json();
-    throw new Error(hasil.error || "Gagal mengambil daftar peminjaman.");
+    // const hasil: { error?: string } = await response.json();
+    throw new Error(await ambilPesanError(response));
   }
 
   return response.json() as Promise<Peminjaman[]>;
 }
 
 export async function getDetailPeminjaman(id: number): Promise<Peminjaman> {
-  const response = await fetch(`${BASE_URL}/peminjaman/${id}`);
+  const response = await kirimRequest(`${BASE_URL}/peminjaman/${id}`);
 
   if (!response.ok) {
-    const hasil: { error?: string } = await response.json();
-    throw new Error(hasil.error || "Gagal mengambil detail peminjaman.");
+    throw new Error(await ambilPesanError(response));
   }
 
   return response.json() as Promise<Peminjaman>;

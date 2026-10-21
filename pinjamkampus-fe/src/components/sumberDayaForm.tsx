@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import type { SumberDayaInput } from "../api/sumberDaya";
 
 type Props = {
@@ -22,21 +23,22 @@ export default function SumberDayaForm({
     onStokChange,
     onSubmit,
 }: Props) {
+
+const [error, setError] = useState("");
+
 function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const namaBersih = nama.trim();
     const stokAngka = Number(stok);
 
-    if (!namaBersih) {
-    return;
-    }
-
-    if (namaBersih.length > 50) {
+    if (!namaBersih || namaBersih.length > 50) {
+    setError("Nama sumber daya wajib diisi, maksimal 50 karakter.");
     return;
     }
 
     if (!Number.isInteger(stokAngka) || stokAngka < 1) {
+    setError("Stok harus berupa bilangan bulat minimal 1.");
     return;
     }
 
@@ -49,6 +51,7 @@ function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 
 return (
     <form onSubmit={handleSubmit}>
+    {error && <p role="alert">{error}</p>}
     <h2>Tambah Sumber Daya</h2>
 
     <label>

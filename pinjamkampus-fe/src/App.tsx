@@ -32,24 +32,26 @@ export default function App() {
   const [detail, setDetail] = useState<Peminjaman | null>(null);
 
   // F1
-  useEffect(() => {
-    async function muatData() {
-      try {
-        const data = await getSumberDaya();
-        setSumberDaya(data);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Gagal memuat sumber daya."
-        );
-      } finally {
-        setMemuat(false);
-      }
-    }
+useEffect(() => {
+  async function muatData() {
+    setMemuat(true);
 
-    void muatData();
-  }, []);
+    try {
+      const data = await getSumberDaya();
+      setSumberDaya(data);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Gagal memuat sumber daya."
+      );
+    } finally {
+      setMemuat(false);
+    }
+  }
+
+  void muatData();
+}, []);
 
   async function handleTambah(data: SumberDayaInput) {
     if (menyimpan) return;
@@ -172,7 +174,6 @@ async function handleDetail(id: number) {
       />
 {/* F3 */}
 {memuatPeminjaman && <p>Memuat...</p>}
-
 {!memuatPeminjaman && (
   <PeminjamanList
     peminjaman={peminjaman}

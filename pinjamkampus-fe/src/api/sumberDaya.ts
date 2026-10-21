@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8081";
+import { kirimRequest, ambilPesanError } from "./http";
 
 export type SumberDaya = {
   id: number;
@@ -13,16 +14,16 @@ export type SumberDayaInput = {
   stok: number;
 };
 
-async function ambilError(response: Response): Promise<string> {
-  const data: { error?: string } = await response.json();
-  return data.error || "Terjadi error pada server.";
-}
+// async function ambilError(response: Response): Promise<string> {
+//   const data: { error?: string } = await response.json();
+//   return data.error || "Terjadi error pada server.";
+// }
 
 export async function getSumberDaya(): Promise<SumberDaya[]> {
-  const response = await fetch(`${BASE_URL}/sumber-daya`);
+  const response = await kirimRequest(`${BASE_URL}/sumber-daya`);
 
   if (!response.ok) {
-    throw new Error(await ambilError(response));
+    throw new Error(await ambilPesanError(response));
   }
 
   return response.json() as Promise<SumberDaya[]>;
@@ -31,16 +32,14 @@ export async function getSumberDaya(): Promise<SumberDaya[]> {
 export async function tambahSumberDaya(
   data: SumberDayaInput,
 ): Promise<SumberDaya> {
-  const response = await fetch(`${BASE_URL}/sumber-daya`, {
+  const response = await kirimRequest(`${BASE_URL}/sumber-daya`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error(await ambilError(response));
+    throw new Error(await ambilPesanError(response));
   }
 
   return response.json() as Promise<SumberDaya>;
