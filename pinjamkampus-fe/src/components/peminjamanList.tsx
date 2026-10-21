@@ -11,18 +11,20 @@ onFilterSumberDaya: (nilai: string) => void;
 onFilterTanggal: (nilai: string) => void;
 onFilterStatus: (nilai: string) => void;
 onDetail: (id: number) => void;
+onEdit: (item: Peminjaman) => void;
 };
 
 export default function PeminjamanList({
-peminjaman,
-sumberDaya,
-filterSumberDaya,
-filterTanggal,
-filterStatus,
-onFilterSumberDaya,
-onFilterTanggal,
-onFilterStatus,
-onDetail,
+  peminjaman,
+  sumberDaya,
+  filterSumberDaya,
+  filterTanggal,
+  filterStatus,
+  onFilterSumberDaya,
+  onFilterTanggal,
+  onFilterStatus,
+  onDetail,
+  onEdit,
 }: Props) {
 return (
     <section>
@@ -89,6 +91,14 @@ return (
             >
                 Detail
             </button>
+            {item.status === "aktif" && (
+            <button
+                type="button"
+                onClick={() => onEdit(item)}
+            >
+                Edit
+            </button>
+            )}
             </li>
         );
         })}

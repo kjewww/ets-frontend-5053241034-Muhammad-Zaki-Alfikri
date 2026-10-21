@@ -13,6 +13,8 @@ import PeminjamanList from "./components/peminjamanList";
 import { getPeminjaman, getDetailPeminjaman, } from "./api/peminjaman";
 import type { Peminjaman } from "./api/peminjaman";
 
+import { ubahPeminjaman } from "./api/peminjaman";
+
 export default function App() {
   const [sumberDaya, setSumberDaya] = useState<SumberDaya[]>([]);
   const [nama, setNama] = useState("");
@@ -30,6 +32,9 @@ export default function App() {
   const [refreshPeminjaman, setRefreshPeminjaman] = useState(0);
   const [memuatPeminjaman, setMemuatPeminjaman] = useState(true);
   const [detail, setDetail] = useState<Peminjaman | null>(null);
+
+  const [peminjamanDiedit, setPeminjamanDiedit] =
+  useState<Peminjaman | null>(null);
 
   // F1
 useEffect(() => {
@@ -78,26 +83,26 @@ useEffect(() => {
   }
 
   // F2
-async function handleTambahPeminjaman(data: PeminjamanInput) {
-  if (menyimpan) return;
+// async function handleTambahPeminjaman(data: PeminjamanInput) {
+//   if (menyimpan) return;
 
-  setMenyimpan(true);
-  setError("");
+//   setMenyimpan(true);
+//   setError("");
 
-try {
-  await tambahPeminjaman(data);
+// try {
+//   await tambahPeminjaman(data);
 
-  setRefreshPeminjaman((sebelumnya) => sebelumnya + 1);
-} catch (err) {
-  setError(
-    err instanceof Error
-      ? err.message
-      : "Gagal menyimpan peminjaman."
-  );
-} finally {
-  setMenyimpan(false);
-}
-}
+//   setRefreshPeminjaman((sebelumnya) => sebelumnya + 1);
+// } catch (err) {
+//   setError(
+//     err instanceof Error
+//       ? err.message
+//       : "Gagal menyimpan peminjaman."
+//   );
+// } finally {
+//   setMenyimpan(false);
+// }
+// }
 
 // F3
 useEffect(() => {
@@ -148,6 +153,46 @@ async function handleDetail(id: number) {
   }
 }
 
+function handleEdit(item: Peminjaman) {
+  setPeminjamanDiedit(item);
+}
+
+
+
+async function handleSimpanPeminjaman(data: PeminjamanInput) {
+  if (menyimpan) {
+    return;
+  }
+
+  setMenyimpan(true);
+  setError("");
+
+  try {
+    if (peminjamanDiedit) {
+      await ubahPeminjaman(peminjamanDiedit.id, data);
+      setPeminjamanDiedit(null);
+    } else {
+      await tambahPeminjaman(data);
+    }
+
+    setRefreshPeminjaman((sebelumnya) => sebelumnya + 1);
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Gagal menyimpan peminjaman."
+    );
+  } finally {
+    setMenyimpan(false);
+  }
+}
+
+
+function handleBatalEdit() {
+  setPeminjamanDiedit(null);
+  setError("");
+}
+
   return (
     <main>
       <h1>PinjamKampus</h1>
@@ -167,11 +212,14 @@ async function handleDetail(id: number) {
       />
       {!memuat && (<SumberDayaList sumberDaya={sumberDaya} />)}
 {/* F2 */}
-      <PeminjamanForm
-        sumberDaya={sumberDaya}
-        menyimpan={menyimpan}
-        onSubmit={handleTambahPeminjaman}
-      />
+    <PeminjamanForm
+      sumberDaya={sumberDaya}
+      menyimpan={menyimpan}
+      dataEdit={peminjamanDiedit}
+      onSubmit={handleSimpanPeminjaman}
+      onBatalEdit={handleBatalEdit}
+      pesanError={error}
+    />
 {/* F3 */}
 {memuatPeminjaman && <p>Memuat...</p>}
 {!memuatPeminjaman && (
@@ -185,6 +233,7 @@ async function handleDetail(id: number) {
     onFilterTanggal={setFilterTanggal}
     onFilterStatus={setFilterStatus}
     onDetail={handleDetail}
+    onEdit={handleEdit}
   />
 )}
 

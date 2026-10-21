@@ -14,11 +14,6 @@ export type SumberDayaInput = {
   stok: number;
 };
 
-// async function ambilError(response: Response): Promise<string> {
-//   const data: { error?: string } = await response.json();
-//   return data.error || "Terjadi error pada server.";
-// }
-
 export async function getSumberDaya(): Promise<SumberDaya[]> {
   const response = await kirimRequest(`${BASE_URL}/sumber-daya`);
 

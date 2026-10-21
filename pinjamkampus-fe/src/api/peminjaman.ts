@@ -83,3 +83,22 @@ export async function getDetailPeminjaman(id: number): Promise<Peminjaman> {
 
   return response.json() as Promise<Peminjaman>;
 }
+
+export async function ubahPeminjaman(
+  id: number,
+  data: PeminjamanInput,
+): Promise<Peminjaman> {
+  const response = await kirimRequest(`${BASE_URL}/peminjaman/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error(await ambilPesanError(response));
+  }
+
+  return response.json() as Promise<Peminjaman>;
+}
