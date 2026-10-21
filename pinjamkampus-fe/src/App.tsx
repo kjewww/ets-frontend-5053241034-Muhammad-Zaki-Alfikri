@@ -13,7 +13,7 @@ import PeminjamanList from "./components/peminjamanList";
 import { getPeminjaman, getDetailPeminjaman, } from "./api/peminjaman";
 import type { Peminjaman } from "./api/peminjaman";
 
-import { ubahPeminjaman } from "./api/peminjaman";
+import { ubahPeminjaman, hapusPeminjaman } from "./api/peminjaman";
 
 export default function App() {
   const [sumberDaya, setSumberDaya] = useState<SumberDaya[]>([]);
@@ -35,6 +35,8 @@ export default function App() {
 
   const [peminjamanDiedit, setPeminjamanDiedit] =
   useState<Peminjaman | null>(null);
+
+  const [menghapusID, setMenghapusID] = useState<number | null>(null);
 
   // F1
 useEffect(() => {
@@ -193,6 +195,42 @@ function handleBatalEdit() {
   setError("");
 }
 
+
+async function handleHapus(id: number) {
+  if (menghapusID !== null) {
+    return;
+  }
+
+  setMenghapusID(id);
+  setError("");
+
+  try {
+    await hapusPeminjaman(id);
+
+    // Ambil ulang daftar setelah server berhasil menghapus.
+    setRefreshPeminjaman((prev) => prev + 1);
+
+    // Tutup detail jika item yang dihapus sedang ditampilkan.
+    if (detail?.id === id) {
+      setDetail(null);
+    }
+
+    // Keluar dari mode edit jika item yang dihapus sedang diedit.
+    if (peminjamanDiedit?.id === id) {
+      setPeminjamanDiedit(null);
+    }
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Gagal menghapus peminjaman."
+    );
+  } finally {
+    setMenghapusID(null);
+  }
+}
+
+
   return (
     <main>
       <h1>PinjamKampus</h1>
@@ -234,6 +272,8 @@ function handleBatalEdit() {
     onFilterStatus={setFilterStatus}
     onDetail={handleDetail}
     onEdit={handleEdit}
+    onHapus={handleHapus}
+    menghapusID={menghapusID}
   />
 )}
 

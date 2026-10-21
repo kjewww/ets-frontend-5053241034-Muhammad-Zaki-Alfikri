@@ -102,3 +102,13 @@ export async function ubahPeminjaman(
 
   return response.json() as Promise<Peminjaman>;
 }
+
+export async function hapusPeminjaman(id: number): Promise<void> {
+  const response = await kirimRequest(`${BASE_URL}/peminjaman/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await ambilPesanError(response));
+  }
+}

@@ -12,6 +12,8 @@ onFilterTanggal: (nilai: string) => void;
 onFilterStatus: (nilai: string) => void;
 onDetail: (id: number) => void;
 onEdit: (item: Peminjaman) => void;
+onHapus: (id: number) => void;
+menghapusID: number | null;
 };
 
 export default function PeminjamanList({
@@ -25,6 +27,8 @@ export default function PeminjamanList({
   onFilterStatus,
   onDetail,
   onEdit,
+  onHapus,
+  menghapusID,
 }: Props) {
 return (
     <section>
@@ -92,6 +96,7 @@ return (
                 Detail
             </button>
             {item.status === "aktif" && (
+
             <button
                 type="button"
                 onClick={() => onEdit(item)}
@@ -99,6 +104,14 @@ return (
                 Edit
             </button>
             )}
+
+            <button
+            type="button"
+            onClick={() => onHapus(item.id)}
+            disabled={menghapusID !== null}
+            >
+            Hapus
+            </button>
             </li>
         );
         })}
